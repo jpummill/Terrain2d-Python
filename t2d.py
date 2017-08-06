@@ -10,6 +10,7 @@
 #--  Author        | Date        | Version  | Description
 #--  John Pummill  | 08/04/2017  | 0.1.1    | Added int() to range for Python3
 #--  John Pummill  | 08/04/2017  | 0.1.2    | Altered demo layers to work with larger resolutions
+#--  John Pummill  | 08/05/2017  | 0.1.3    | Add ability to change width/height via command line
 #-------------------------------------------------------------------------------------------------
 
 
@@ -17,6 +18,9 @@ import os                             # path resolving and image saving
 import random                         # midpoint displacement
 from PIL import Image, ImageDraw      # image creation and drawing
 import bisect                         # working with the sorted list of points
+import argparse                       # Parse command line arguments 
+
+
 
 
 # Iterative midpoint vertical displacement
@@ -121,16 +125,19 @@ def draw_layers(layers, width, height, color_dict=None):
 
 
 def main():
-    width = 3440  # Terrain width
-    height = 1440  # Terrain height
+    parser = argparse.ArgumentParser(description="Generate two dimensional terrain images.")
+    parser.add_argument("--width", action="store", type=int, default=720, help="Specify image width")
+    parser.add_argument("--height", action="store", type=int, default=480, help="Specify image height")
+    args = parser.parse_args()
+    print(args)
+
+    width = args.width     # Terrain width
+    height = args.height   # Terrain height
+
     # Compute different layers of the landscape
-#    layer_1 = midpoint_displacement([250, 0], [width, 200], 1.4, 20, 12)
     layer_1 = midpoint_displacement([250, 0], [width, height/5], 1.4, 20, 12)
-#    layer_2 = midpoint_displacement([0, 180], [width, 80], 1.2, 30, 12)
     layer_2 = midpoint_displacement([0, height/4], [width, 80], 1.2, 30, 12)
-#    layer_3 = midpoint_displacement([0, 270], [width, 190], 1, 120, 9)
     layer_3 = midpoint_displacement([0, height/3], [width, height/3], 1, 120, 9)
-#    layer_4 = midpoint_displacement([0, 350], [width, 320], 0.9, 250, 8)
     layer_4 = midpoint_displacement([0, height/2], [width, height/2], 0.9, 250, 8)
 
     landscape = draw_layers([layer_4, layer_3, layer_2, layer_1], width, height)
